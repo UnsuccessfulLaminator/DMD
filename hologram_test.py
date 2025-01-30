@@ -1,22 +1,9 @@
+import hologram
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
 
-
-# Frequency 1 square wave, variable phase shift in radians, variable duty
-# cycle in [0, 1].
-def square_wave(t, phase_shift, duty):
-    phase_norm = t-phase/(2*np.pi)
-
-    return (np.mod(phase_norm+duty/2, 1) < duty).astype(float)
-
-def gen_hologram(ampl, phase, freq):
-    ys, xs = map(np.arange, ampl.shape)
-    xx, yy = np.meshgrid(xs, ys)
-    duty = np.arcsin(ampl)/np.pi
-    
-    return square_wave(xx*freq[0]+yy*freq[1], phase, duty)
 
 def imshow_complex(z):
     hue = 0.5+np.angle(z)/(2*np.pi)
@@ -40,7 +27,7 @@ radius_lim = min(size)/2
 ampl = 0.5-0.5*np.cos(2*np.pi*radius/radius_lim)
 ampl[radius > radius_lim] = 0
 
-holo = gen_hologram(ampl, phase, freq)
+holo = hologram.orthogonal_lee(ampl, phase, freq)
 
 ft = np.fft.fft2(holo)
 fy, fx = map(np.fft.fftfreq, size)
