@@ -9,12 +9,12 @@ def square_wave(t, phase_shift, duty):
 
     return (np.mod(phase_norm+duty/2, 1) < duty).astype(float)
 
-# Generate a binary orthogonal Lee hologram using duty cycle modulation.
+# Generate a binary parallel Lee hologram using duty cycle modulation.
 #     ampl  - Amplitude of the target field, in the range 0 to 1
 #     phase - Phase of the target field, in radians
 #     freq  - 2-component frequency vector of the carrier fringes
 # Returns a binary-valued hologram image of the same shape as ampl & phase
-def orthogonal_lee(ampl, phase, freq):
+def parallel_lee(ampl, phase, freq):
     if ampl.shape != phase.shape:
         raise ValueError("Ampl and phase arrays must have the same shape")
 
