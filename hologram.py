@@ -23,3 +23,22 @@ def parallel_lee(ampl, phase, freq):
     duty = np.arcsin(ampl)/np.pi
     
     return square_wave(xx*freq[0]+yy*freq[1], phase, duty)
+
+# Generate a binary orthogonal Lee hologram using duty cycle modulation.
+# The amplitude modulation frequency vector will be exactly a 90 degree
+# rotation of the carrier frequency vector.
+#     ampl  - Amplitude of the target field, in the range 0 to 1
+#     phase - Phase of the target field, in radians
+#     freq  - 2-component frequency vector of the carrier fringes
+# Returns a binary-valued hologram image of the same shape as ampl & phase
+def orthogonal_lee(ampl, phase, freq):
+    if ampl.shape != phase.shape:
+        raise ValueError("Ampl and phase arrays must have the same shape")
+
+    ys, xs = map(np.arange, ampl.shape)
+    xx, yy = np.meshgrid(xs, ys)
+
+    fringes = square_wave(xx*freq[0]+yy*freq[1], phase, 0.5)
+    fringes_ortho = square_wave(yy*freq[0]-xx*freq[1], 0, ampl)
+
+    return fringes*fringes_ortho

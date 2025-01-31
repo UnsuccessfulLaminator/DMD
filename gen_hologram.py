@@ -13,14 +13,22 @@ parser = ArgumentParser()
 parser.add_argument("width", type = int)
 parser.add_argument("height", type = int)
 parser.add_argument("out")
-parser.add_argument("--freq", "-f", type = vector)
-parser.add_argument("--freq-polar", "-fp", type = vector)
 parser.add_argument("--radius", "-r", type = float, default = 1)
+parser.add_argument("--type", "-t")
+
+group = parser.add_mutually_exclusive_group(required = True)
+group.add_argument("--freq", "-f", type = vector)
+group.add_argument("--freq-polar", "-fp", type = vector)
 
 args = parser.parse_args()
 
-if (args.freq is None) == (args.freq_polar is None):
-    print("Must specify exactly one of --freq (-f) or --freq-polar (-fp)")
+valid_hologram_types = ("lee_par", "lee_ortho")
+
+if args.type not in valid_hologram_types:
+    print("Valid hologram types are:")
+
+    for t in valid_hologram_types: print(" ", t)
+
     exit(1)
 
 import hologram
@@ -47,6 +55,9 @@ radius = np.hypot(xx, yy)
 ampl = 0.5-0.5*np.cos(2*np.pi*radius/radius_lim)
 ampl[radius > radius_lim] = 0
 
-holo = hologram.orthogonal_lee(ampl, phase, freq)
+if args.type == "lee_par":
+    holo = hologram.parallel_lee(ampl, phase, freq)
+elif args.type == "lee_ortho":
+    holo = hologram.orthogonal_lee(ampl, phase, freq)
 
 Image.fromarray(holo.astype("u1")*255).save(args.out)
